@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>AgWorkforce AI — Quantifying GenAI's Impact on Agriculture & Sustainability Hiring</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#080e1a;--ink2:#0e1828;--ink3:#152035;
+  --blue:#1a4fd6;--blueL:#3b6ef0;--blueP:#e8eeff;
+  --gold:#e8a020;--goldL:#f5c050;--goldP:#fef3d8;
+  --green:#16a04a;--greenL:#22c962;
+  --red:#c0392b;--redL:#e85a4a;
+  --cream:#f0f4ff;--steel:#7a8eaa;--muted:#4a5870;
+  --border:rgba(58,100,200,0.18);
+  --card:rgba(14,24,40,0.85);
+}
+html{scroll-behavior:smooth}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--ink);color:var(--cream);line-height:1.7;overflow-x:hidden}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:300;background:rgba(8,14,26,0.94);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;height:56px}
+.nav-brand{font-family:'IBM Plex Mono',monospace;color:var(--goldL);font-size:0.88rem;letter-spacing:0.05em;display:flex;align-items:center;gap:0.5rem}
+.nav-brand .sub{color:var(--steel);font-weight:400;font-size:0.72rem}
+.nav-links{display:flex;gap:1.8rem;align-items:center}
+.nav-links a{color:var(--steel);text-decoration:none;font-size:0.76rem;letter-spacing:0.1em;text-transform:uppercase;transition:color .2s}
+.nav-links a:hover{color:var(--goldL)}
+.nav-cta{background:var(--blue);color:var(--cream)!important;padding:.38rem .9rem;border-radius:4px;font-weight:500;transition:background .2s!important}
+.nav-cta:hover{background:var(--blueL)!important}
+
+/* ── HERO ── */
+#hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7rem 2rem 5rem;position:relative;overflow:hidden;text-align:center}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 30%,rgba(26,79,214,0.12) 0%,transparent 70%)}
+.hero-grid{position:absolute;inset:0;opacity:.035;background-image:linear-gradient(rgba(100,150,255,.7) 1px,transparent 1px),linear-gradient(90deg,rgba(100,150,255,.7) 1px,transparent 1px);background-size:52px 52px}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:var(--goldL);margin-bottom:1.2rem;display:inline-flex;align-items:center;gap:.7rem}
+.eyebrow::before,.eyebrow::after{content:'';display:block;width:36px;height:1px;background:var(--goldL);opacity:.5}
+#hero h1{font-family:'Playfair Display',serif;font-size:clamp(2.4rem,5.5vw,4rem);line-height:1.08;max-width:850px;color:var(--cream);position:relative}
+#hero h1 em{font-style:italic;color:var(--blueL)}
+.hero-sub{color:var(--steel);font-size:1rem;max-width:540px;margin:1.6rem auto 0;line-height:1.75}
+.hero-stats{display:flex;gap:0;margin-top:3.5rem;border:1px solid var(--border);border-radius:8px;overflow:hidden;background:rgba(255,255,255,.02)}
+.hs{flex:1;padding:1.3rem 1.8rem;text-align:center;border-right:1px solid var(--border)}
+.hs:last-child{border-right:none}
+.hs .n{font-family:'Playfair Display',serif;font-size:1.9rem;color:var(--goldL);display:block;line-height:1}
+.hs .l{font-size:.68rem;color:var(--steel);text-transform:uppercase;letter-spacing:.08em;margin-top:.3rem}
+
+/* ── SECTIONS ── */
+section{padding:5.5rem 2rem}
+.container{max-width:1080px;margin:0 auto}
+.s-eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--goldL);margin-bottom:.6rem}
+.s-title{font-family:'Playfair Display',serif;font-size:clamp(1.7rem,3vw,2.5rem);line-height:1.18;color:var(--cream);margin-bottom:.8rem}
+.s-desc{color:var(--steel);font-size:.95rem;max-width:580px;margin-bottom:2.5rem}
+.divider{width:44px;height:2px;background:linear-gradient(to right,var(--gold),transparent);margin:1rem 0}
+
+/* ── FINDING LABEL ── */
+.f-label{font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:var(--blueL);margin-bottom:.4rem;display:flex;align-items:center;gap:.5rem}
+.f-label::before{content:'';display:block;width:20px;height:2px;background:var(--blueL)}
+
+/* ── STAT STRIP ── */
+.stat-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin:2rem 0}
+.sc{background:var(--ink2);padding:1.3rem 1.1rem;text-align:center}
+.sc .sv{font-family:'Playfair Display',serif;font-size:2rem;color:var(--goldL);display:block;line-height:1}
+.sc .sl{font-size:.68rem;color:var(--steel);text-transform:uppercase;letter-spacing:.07em;margin-top:.3rem}
+
+/* ── CALLOUT ── */
+.callout{background:rgba(26,79,214,.07);border-left:3px solid var(--blue);padding:.9rem 1.2rem;border-radius:0 4px 4px 0;font-size:.9rem;color:var(--cream);margin:1.5rem 0;line-height:1.65}
+.callout.gold{border-left-color:var(--gold);background:rgba(232,160,32,.07)}
+.callout.red{border-left-color:var(--red);background:rgba(192,57,43,.07)}
+.callout.green{border-left-color:var(--green);background:rgba(22,160,74,.07)}
+.callout strong{color:var(--goldL)}
+.callout.green strong{color:var(--greenL)}
+.callout.red strong{color:var(--redL)}
+
+/* ── CHART CARD ── */
+.chart-card{background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:6px;padding:1.4rem;margin:1.2rem 0}
+.cc-title{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--goldL);margin-bottom:.25rem}
+.cc-sub{font-size:.78rem;color:var(--steel);margin-bottom:1.1rem}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem}
+canvas{max-height:300px}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:1.5rem}
+.tab-btn{background:none;border:none;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;font-size:.8rem;color:var(--steel);padding:.65rem 1.2rem;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s;letter-spacing:.02em}
+.tab-btn.active{color:var(--goldL);border-bottom-color:var(--gold)}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* ── SKILL TABLE ── */
+.skill-table{width:100%;border-collapse:collapse;font-size:.86rem;margin:1rem 0}
+.skill-table th{background:rgba(26,79,214,.15);color:var(--blueL);padding:.6rem 1rem;text-align:left;font-weight:500;font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase}
+.skill-table td{padding:.55rem 1rem;border-bottom:1px solid rgba(255,255,255,.04);color:var(--cream)}
+.skill-table tr:hover td{background:rgba(255,255,255,.025)}
+.rank-badge{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:4px;font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:600;margin-right:.5rem}
+
+/* ── JOB TITLES ── */
+.titles-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin:1.5rem 0}
+.titles-col{background:var(--ink2)}
+.titles-col-header{padding:.7rem 1rem;font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600}
+.title-row{display:flex;justify-content:space-between;align-items:center;padding:.42rem .9rem;border-bottom:1px solid rgba(255,255,255,.04);font-size:.82rem}
+.title-row:last-child{border-bottom:none}
+.title-row .cnt{font-family:'IBM Plex Mono',monospace;font-size:.74rem;font-weight:600}
+.title-row.data{background:rgba(22,160,74,.06)}
+.title-row.data .tn{color:var(--greenL)}
+.title-row.data .cnt{color:var(--greenL)}
+
+/* ── BLOCKQUOTE ── */
+.bq{border-left:4px solid var(--gold);padding:1.3rem 1.6rem;background:rgba(255,255,255,.02);border-radius:0 6px 6px 0;font-family:'Playfair Display',serif;font-size:1.15rem;line-height:1.6;color:var(--cream);margin:2rem 0;font-style:italic}
+.bq .attr{font-family:'IBM Plex Sans',sans-serif;font-style:normal;font-size:.76rem;color:var(--steel);margin-top:.7rem;display:block}
+
+/* ── TAKEAWAY CARDS ── */
+.tk-card{background:var(--ink2);border:1px solid var(--border);border-radius:6px;padding:1.5rem 1.6rem;margin-bottom:1rem;display:flex;gap:1.2rem;align-items:flex-start}
+.tk-num{font-family:'Playfair Display',serif;font-size:2.2rem;line-height:1;flex-shrink:0;width:3rem;text-align:center;margin-top:.1rem}
+.tk-card h3{font-size:1rem;font-weight:600;margin-bottom:.35rem}
+.tk-card p{font-size:.9rem;color:var(--steel);line-height:1.65}
+
+/* ── POLICY COLS ── */
+.policy-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:1.5rem 0}
+.policy-card{background:var(--ink2);border:1px solid var(--border);border-radius:6px;padding:1.4rem;overflow:hidden}
+.policy-card .pc-header{padding:.5rem .8rem;margin:-1.4rem -1.4rem 1rem;font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600}
+.policy-card li{font-size:.84rem;color:var(--steel);padding:.28rem 0 .28rem 1.1rem;list-style:none;position:relative;border-bottom:1px solid rgba(255,255,255,.04)}
+.policy-card li:last-child{border-bottom:none}
+.policy-card li::before{content:'→';position:absolute;left:0;font-size:.78rem}
+
+/* ── METHODS ── */
+.method-flow{display:flex;align-items:stretch;gap:0;margin:2rem 0;background:var(--border);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.mf-box{flex:1;background:var(--ink2);padding:1.5rem;position:relative}
+.mf-box+.mf-box::before{content:'→';position:absolute;left:-12px;top:50%;transform:translateY(-50%);color:var(--blueL);font-size:1.1rem;z-index:2;background:var(--ink2);padding:.2rem 0}
+.mf-box h3{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--goldL);margin-bottom:.8rem}
+.mf-box ul li{font-size:.8rem;color:var(--steel);padding:.2rem 0;list-style:none;position:relative;padding-left:.9rem}
+.mf-box ul li::before{content:'·';position:absolute;left:0;color:var(--blueL)}
+.eq-card{background:rgba(255,255,255,.02);border:1px solid var(--border);border-left:3px solid var(--blueL);border-radius:0 6px 6px 0;padding:1rem 1.3rem;margin:.8rem 0;font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:var(--blueP);line-height:1.8}
+.eq-card .eq-label{font-size:.65rem;color:var(--steel);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.1em}
+.eq-note{font-size:.75rem;color:var(--muted);margin-top:.4rem;font-family:'IBM Plex Sans',sans-serif;font-style:italic}
+
+/* ── TEAM ── */
+.team-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin:1.5rem 0}
+.team-card{border:1px solid var(--border);border-radius:6px;padding:1.5rem;background:rgba(255,255,255,.02)}
+.team-card .tc-name{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--cream);margin-bottom:.25rem}
+.team-card .tc-role{font-size:.82rem;color:var(--goldL);margin-bottom:.15rem}
+.team-card .tc-minor{font-size:.78rem;color:var(--steel)}
+
+/* ── FOOTER ── */
+footer{background:var(--ink2);border-top:1px solid var(--border);padding:2.5rem 2rem;text-align:center;font-size:.8rem;color:var(--muted)}
+footer .fb{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--goldL);margin-bottom:.4rem}
+footer a{color:var(--goldL);text-decoration:none}
+
+/* ── ALTERNATING BG ── */
+.bg-alt{background:var(--ink2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+
+/* ── SCROLL CUES ── */
+.scroll-cue{position:relative;margin-top:3rem;display:flex;flex-direction:column;align-items:center;gap:.4rem;color:rgba(255,255,255,.2);font-size:.68rem;font-family:'IBM Plex Mono',monospace;letter-spacing:.1em}
+.scroll-line{width:1px;height:36px;background:linear-gradient(to bottom,rgba(232,160,32,.7),transparent);animation:drip 2s ease-in-out infinite}
+@keyframes drip{0%,100%{transform:scaleY(1);opacity:1}50%{transform:scaleY(.5);opacity:.3}}
+
+@media(max-width:760px){
+  .two-col,.titles-grid,.policy-grid,.team-grid,.method-flow{grid-template-columns:1fr}
+  .hero-stats{flex-direction:column}
+  .hs{border-right:none;border-bottom:1px solid var(--border)}
+  nav .nav-links{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">AgWorkforce <span class="sub">/ Rutgers Aresty 2026</span></div>
+  <div class="nav-links">
+    <a href="#findings">Findings</a>
+    <a href="#skills">Skills</a>
+    <a href="#compensation">Compensation</a>
+    <a href="#barriers">Barriers</a>
+    <a href="#methods">Methods</a>
+    <a href="#about" class="nav-cta">About</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="eyebrow">Rutgers Aresty Research Program · 2025–2026</div>
+  <h1>Quantifying Generative AI's Impact<br>on <em>Workforce Skill Demands</em></h1>
+  <p class="hero-sub">Evidence from Agriculture and Sustainability Job Postings. We analyzed 25,530 entry-level federal and private sector postings to measure how ChatGPT's release reshaped what employers ask for.</p>
+  <div class="hero-stats">
+    <div class="hs"><span class="n">25,530</span><div class="l">Job Postings</div></div>
+    <div class="hs"><span class="n">50+D.C.</span><div class="l">States</div></div>
+    <div class="hs"><span class="n">2019–2025</span><div class="l">Time Span</div></div>
+    <div class="hs"><span class="n">86</span><div class="l">New Tools Since 2020</div></div>
+    <div class="hs"><span class="n">13/21</span><div class="l">Occ. Now Require GIS</div></div>
+  </div>
+  <div class="scroll-cue"><div class="scroll-line"></div><span>Scroll to explore</span></div>
+</section>
+
+<!-- FINDING 1 — SKILL EVOLUTION -->
+<section id="findings">
+  <div class="container">
+    <div class="f-label">Finding #1</div>
+    <h2 class="s-title">Active Learning Is the Only Skill Trending Upward</h2>
+    <div class="divider"></div>
+    <p class="s-desc">O*NET occupational data from 2020→2024 shows every major skill category declining or flat — except Learning & Adaptability, which is the sole net-positive shift.</p>
+
+    <div class="stat-strip">
+      <div class="sc"><span class="sv">+0.053</span><div class="sl">Complex Problem Solving gain</div></div>
+      <div class="sc"><span class="sv">−0.068</span><div class="sl">Personnel Mgmt loss</div></div>
+      <div class="sc"><span class="sv">+0.014</span><div class="sl">Learning & Adaptability (only rising)</div></div>
+      <div class="sc"><span class="sv">17 / 21</span><div class="sl">Occupations with valid shift data</div></div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('sk-shift','sk')">Skill Category Shifts</button>
+      <button class="tab-btn" onclick="switchTab('sk-top','sk')">Gaining vs Losing</button>
+      <button class="tab-btn" onclick="switchTab('sk-table','sk')">Top Skills (Post-ChatGPT)</button>
+    </div>
+
+    <div id="sk-shift" class="tab-panel active">
+      <div class="chart-card">
+        <div class="cc-title">Skill Category Importance Shifts (O*NET 2020→2024)</div>
+        <div class="cc-sub">Average shift on 5-point importance scale across 17 matched occupations</div>
+        <canvas id="skillShiftChart"></canvas>
+      </div>
+      <div class="callout green"><strong>Only rising category:</strong> Learning & Adaptability (+0.014). This is not a small signal — it is the singular direction where employer expectations moved upward. Employers want candidates who can keep up with a field that keeps changing.</div>
+    </div>
+
+    <div id="sk-top" class="tab-panel">
+      <div class="two-col">
+        <div class="chart-card">
+          <div class="cc-title">📈 Top Gaining Skills</div>
+          <div class="cc-sub">Ranked by average importance gain</div>
+          <canvas id="gainingChart"></canvas>
+        </div>
+        <div class="chart-card">
+          <div class="cc-title">📉 Top Losing Skills</div>
+          <div class="cc-sub">Skills declining in occupational importance</div>
+          <canvas id="losingChart"></canvas>
+        </div>
+      </div>
+      <div class="callout red"><strong>What's declining:</strong> Supervisory and quality control skills — Management of Personnel Resources, Quality Control Analysis, Instructing — are losing ground. These are exactly the functions automation is absorbing. The pattern is consistent with AI taking on routine coordination roles.</div>
+    </div>
+
+    <div id="sk-table" class="tab-panel">
+      <p style="color:var(--steel);font-size:.88rem;margin-bottom:1.2rem;">Top 5 skills in each category after ChatGPT's release. Classification: Soft = interpersonal/behavioral · Digital = computational tools · Technical = domain knowledge & compliance</p>
+      <div class="two-col">
+        <div>
+          <table class="skill-table">
+            <thead><tr><th>#</th><th>Soft Skills</th></tr></thead>
+            <tbody>
+              <tr><td><span class="rank-badge" style="background:#1a4fd6;color:#fff">1</span></td><td>Adaptability</td></tr>
+              <tr><td><span class="rank-badge" style="background:#1a4fd6;color:#fff">2</span></td><td>Management & Leadership</td></tr>
+              <tr><td><span class="rank-badge" style="background:#1a4fd6;color:#fff">3</span></td><td>Communication</td></tr>
+              <tr><td><span class="rank-badge" style="background:#1a4fd6;color:#fff">4</span></td><td>Organizational Planning</td></tr>
+              <tr><td><span class="rank-badge" style="background:#1a4fd6;color:#fff">5</span></td><td>Complex Problem Solving</td></tr>
+            </tbody>
+          </table>
+          <table class="skill-table" style="margin-top:1rem">
+            <thead><tr><th>#</th><th>Digital Skills</th></tr></thead>
+            <tbody>
+              <tr><td><span class="rank-badge" style="background:#e8a020;color:#080e1a">1</span></td><td>Data Analytics</td></tr>
+              <tr><td><span class="rank-badge" style="background:#e8a020;color:#080e1a">2</span></td><td>Geospatial Tech (GIS / Remote Sensing)</td></tr>
+              <tr><td><span class="rank-badge" style="background:#e8a020;color:#080e1a">3</span></td><td>Python / R Programming</td></tr>
+              <tr><td><span class="rank-badge" style="background:#e8a020;color:#080e1a">4</span></td><td>Precision Ag Tech (Automation / IoT)</td></tr>
+              <tr><td><span class="rank-badge" style="background:#e8a020;color:#080e1a">5</span></td><td>Statistical Modeling</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <table class="skill-table">
+            <thead><tr><th>#</th><th>Technical Skills</th></tr></thead>
+            <tbody>
+              <tr><td><span class="rank-badge" style="background:#16a04a;color:#fff">1</span></td><td>Compliance</td></tr>
+              <tr><td><span class="rank-badge" style="background:#16a04a;color:#fff">2</span></td><td>Renewable Energy</td></tr>
+              <tr><td><span class="rank-badge" style="background:#16a04a;color:#fff">3</span></td><td>ESG Reporting</td></tr>
+              <tr><td><span class="rank-badge" style="background:#16a04a;color:#fff">4</span></td><td>Equipment Maintenance</td></tr>
+              <tr><td><span class="rank-badge" style="background:#16a04a;color:#fff">5</span></td><td>Carbon Accounting</td></tr>
+            </tbody>
+          </table>
+          <div class="callout" style="margin-top:1.2rem;font-size:.84rem"><strong>Soft skills dominate across all periods.</strong> Digital and technical demands grew post-ChatGPT, but soft skills remain the most consistently required category in both agriculture and sustainability roles.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINDING 2 — 86 NEW TOOLS -->
+<section class="bg-alt" id="skills">
+  <div class="container">
+    <div class="f-label">Finding #1 (continued)</div>
+    <h2 class="s-title">86 New Technologies — The Technical Floor Is Rising</h2>
+    <div class="divider"></div>
+    <p class="s-desc">Active learning is rising because it has to. 86 new tools entered occupation requirements between 2020 and 2024 — across every role type, not just data-focused positions.</p>
+
+    <div class="stat-strip">
+      <div class="sc"><span class="sv">86</span><div class="sl">New tools since 2020</div></div>
+      <div class="sc"><span class="sv">13/21</span><div class="sl">Categories now require GIS</div></div>
+      <div class="sc"><span class="sv">31</span><div class="sl">Occupations need geospatial tools</div></div>
+      <div class="sc"><span class="sv">5</span><div class="sl">AI/optimization tools entered</div></div>
+    </div>
+
+    <div class="two-col">
+      <div class="chart-card">
+        <div class="cc-title">New Technology Groups (2020→2024)</div>
+        <div class="cc-sub">Occupations requiring each technology category</div>
+        <canvas id="techChart"></canvas>
+      </div>
+      <div>
+        <div class="callout gold" style="margin-top:0"><strong>Geospatial & Remote Sensing leads:</strong> GIS systems entered 13 of 21 occupation categories — the strongest single technology signal in the dataset. A forestry technician, soil conservationist, and wildlife biologist are all now expected to use GIS.</div>
+        <div style="margin-top:1rem">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--goldL);margin-bottom:.7rem">Specific tools now required</div>
+          <div style="display:flex;flex-wrap:wrap;gap:.4rem">
+            <span style="background:rgba(26,79,214,.15);border:1px solid var(--border);border-radius:3px;padding:.25rem .6rem;font-size:.76rem;color:var(--cream)">GIS Systems</span>
+            <span style="background:rgba(26,79,214,.15);border:1px solid var(--border);border-radius:3px;padding:.25rem .6rem;font-size:.76rem;color:var(--cream)">Remote Sensing</span>
+            <span style="background:rgba(26,79,214,.15);border:1px solid var(--border);border-radius:3px;padding:.25rem .6rem;font-size:.76rem;color:var(--cream)">Oracle Database</span>
+            <span style="background:rgba(22,160,74,.15);border:1px solid rgba(22,160,74,.3);border-radius:3px;padding:.25rem .6rem;font-size:.76rem;color:var(--greenL)">LINDO Optimization (AI)</span>
+            <span style="background:rgba(22,160,74,.15);border:1px solid rgba(22,160,74,.3);border-radius:3px;padding:.25rem .6rem;font-size:.76rem;color:var(--greenL)">Fire Behavior Modeling (AI)</span>
+            <span style="background:rgba(26,79,214,.15);border:1px solid var(--border);border-radius:3px;padding:.25rem .6rem;font-size:.76rem;color:var(--cream)">Microsoft Office Suite</span>
+            <span style="background:rgba(26,79,214,.15);border:1px solid var(--border);border-radius:3px;padding:.25rem .6rem;font-size:.76rem;color:var(--cream)">Adobe Creative Suite</span>
+            <span style="background:rgba(232,160,32,.12);border:1px solid rgba(232,160,32,.3);border-radius:3px;padding:.25rem .6rem;font-size:.76rem;color:var(--goldL)">CropSyst / CroPMan</span>
+            <span style="background:rgba(232,160,32,.12);border:1px solid rgba(232,160,32,.3);border-radius:3px;padding:.25rem .6rem;font-size:.76rem;color:var(--goldL)">USDA Forest Veg Simulator</span>
+            <span style="background:rgba(26,79,214,.15);border:1px solid var(--border);border-radius:3px;padding:.25rem .6rem;font-size:.76rem;color:var(--cream)">Water Resources DB</span>
+          </div>
+        </div>
+        <div class="callout" style="margin-top:1rem;font-size:.84rem"><strong>The pattern:</strong> These are not abstract skill shifts. They show up as concrete tool requirements in federal job postings — tools that were not listed in these roles four years ago.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINDING 2 — COMPENSATION -->
+<section id="compensation">
+  <div class="container">
+    <div class="f-label">Finding #2</div>
+    <h2 class="s-title">The Salary Gap Is a Grade Story, Not a Sector Story</h2>
+    <div class="divider"></div>
+    <p class="s-desc">The federal government pays everyone on the General Schedule (GS) — grade determines salary, not sector. The apparent Agriculture vs Sustainability gap disappears once GS grade and location are controlled.</p>
+
+    <div class="callout gold">
+      <strong>What is GS?</strong> The General Schedule is the federal pay scale. GS-5 is the most common entry-level grade — GS-7 and GS-9 are the next steps up. Pay is nearly deterministic by grade, locality, and year. Our regression R² = 0.947, which is expected given this structure.
+    </div>
+
+    <div class="stat-strip">
+      <div class="sc"><span class="sv">$43,251</span><div class="sl">Pre-ChatGPT median</div></div>
+      <div class="sc"><span class="sv">$49,025</span><div class="sl">Post-ChatGPT median (+13.3%)</div></div>
+      <div class="sc"><span class="sv">+6.8%</span><div class="sl">GS-7 vs GS-5 premium</div></div>
+      <div class="sc"><span class="sv">+13.2%</span><div class="sl">GS-9 vs GS-5 premium</div></div>
+      <div class="sc"><span class="sv">+0.4% NS</span><div class="sl">Adjusted sector gap</div></div>
+    </div>
+
+    <div class="two-col">
+      <div class="chart-card">
+        <div class="cc-title">(A) Salary Shift: Before vs After ChatGPT</div>
+        <div class="cc-sub">Federal, GS-5 to GS-9 · Unadjusted medians</div>
+        <canvas id="salaryShift"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="cc-title">(B) Regression Results — Salary Model</div>
+        <div class="cc-sub">% salary impact · N=21,098 grade-known rows · Company-clustered SE</div>
+        <canvas id="regressionChart"></canvas>
+      </div>
+    </div>
+
+    <div class="callout red"><strong>The grade sorting story:</strong> Sustainability postings appear to pay more in the raw data — but this is because they were posted at higher GS grades. Once grade and location are controlled, the sector premium collapses to +0.4% (NS). The salary story is not about Agriculture vs Sustainability. It's about whether you enter at GS-5 or one step above it.</div>
+
+    <div class="bq">
+      "The most direct path to a higher federal salary is not switching sectors — it is earning the credentials that unlock a higher entry grade."
+      <span class="attr">— AgWorkforce findings, 2026 · GIS and data analytics are the primary route to GS-7/9 entry</span>
+    </div>
+  </div>
+</section>
+
+<!-- FINDING 3 — BARRIERS -->
+<section class="bg-alt" id="barriers">
+  <div class="container">
+    <div class="f-label">Finding #3</div>
+    <h2 class="s-title">The Barrier Is Structural, Not Individual</h2>
+    <div class="divider"></div>
+    <p class="s-desc">Rising technical demands mean the right credentials now determine whether an application reaches a human reviewer. Over half of postings show signs of ATS usage.</p>
+
+    <div class="callout">
+      <strong>What is ATS?</strong> Applicant Tracking Systems are automated software that screen resumes before any human reads them. They filter by keywords, credentials, and tool names. The wrong keywords, a missing certification, or an absent tool name eliminates a qualified candidate invisibly — before a recruiter ever sees their name.
+    </div>
+
+    <div class="stat-strip">
+      <div class="sc"><span class="sv">56%</span><div class="sl">Postings with ATS signals</div></div>
+      <div class="sc"><span class="sv">13/21</span><div class="sl">Occupation categories now require GIS</div></div>
+      <div class="sc"><span class="sv">3.3% vs 32%</span><div class="sl">Federal vs private early-career rate</div></div>
+      <div class="sc"><span class="sv">86 tools</span><div class="sl">New requirements since 2020</div></div>
+    </div>
+
+    <div class="two-col">
+      <div class="chart-card">
+        <div class="cc-title">Federal vs Private Sector Early-Career Rate</div>
+        <div class="cc-sub">Share of postings classified as entry-level</div>
+        <canvas id="earlyCareerChart"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="cc-title">Domain Shift Before vs After ChatGPT</div>
+        <div class="cc-sub">Change in occupational domain presence (pp, Post minus Pre)</div>
+        <canvas id="domainChart"></canvas>
+      </div>
+    </div>
+
+    <div class="callout red">
+      <strong>The credential timing problem:</strong> Students who enrolled in 2022 chose courses based on 2022 requirements. GIS and data analytics have since become screening criteria in 13 occupation categories. This is not a failure of individual applicants — it is a structural misalignment between when curricula were designed and when students enter the market.
+    </div>
+  </div>
+</section>
+
+<!-- WHO IS BEING HIRED -->
+<section>
+  <div class="container">
+    <div class="s-eyebrow">Dataset Context</div>
+    <h2 class="s-title">Who Is Actually Being Hired</h2>
+    <div class="divider"></div>
+    <p class="s-desc">25,530 entry-level postings across federal (USAJobs) and private sector (Adzuna snapshot). Green rows = data/GIS/analytics roles aligning with domain shift growth.</p>
+
+    <div class="titles-grid">
+      <div class="titles-col">
+        <div class="titles-col-header" style="background:rgba(22,160,74,.2);color:#22c962">🌿 Sustainability — Federal (22,852)</div>
+        <div class="title-row"><span class="tn">Forestry Tech — Fire</span><span class="cnt" style="color:var(--steel)">3,312</span></div>
+        <div class="title-row"><span class="tn">Forestry Tech — General</span><span class="cnt" style="color:var(--steel)">1,502</span></div>
+        <div class="title-row"><span class="tn">Soil Conservationist</span><span class="cnt" style="color:var(--steel)">1,300</span></div>
+        <div class="title-row"><span class="tn">Bio Sci Tech — Wildlife</span><span class="cnt" style="color:var(--steel)">1,239</span></div>
+        <div class="title-row"><span class="tn">Wildlife Biologist</span><span class="cnt" style="color:var(--steel)">1,110</span></div>
+        <div class="title-row"><span class="tn">Biologist (General)</span><span class="cnt" style="color:var(--steel)">882</span></div>
+        <div class="title-row"><span class="tn">Hydrologist</span><span class="cnt" style="color:var(--steel)">641</span></div>
+        <div class="title-row data"><span class="tn">GIS / Geospatial Specialist</span><span class="cnt">64+</span></div>
+        <div class="title-row data"><span class="tn">Data Science / Bioinformatics</span><span class="cnt">89+</span></div>
+      </div>
+      <div class="titles-col">
+        <div class="titles-col-header" style="background:rgba(232,160,32,.15);color:var(--goldL)">🌾 Agriculture — Federal (2,771)</div>
+        <div class="title-row"><span class="tn">Loan Asst / Specialist</span><span class="cnt" style="color:var(--steel)">922</span></div>
+        <div class="title-row"><span class="tn">Ag Commodity Grader</span><span class="cnt" style="color:var(--steel)">484</span></div>
+        <div class="title-row"><span class="tn">Civil / Ag Engineer</span><span class="cnt" style="color:var(--steel)">413</span></div>
+        <div class="title-row"><span class="tn">Ag Program Specialist</span><span class="cnt" style="color:var(--steel)">266</span></div>
+        <div class="title-row"><span class="tn">Ag Science Research Tech</span><span class="cnt" style="color:var(--steel)">219</span></div>
+        <div class="title-row"><span class="tn">Ag Marketing Specialist</span><span class="cnt" style="color:var(--steel)">145</span></div>
+        <div class="title-row"><span class="tn">Agronomist</span><span class="cnt" style="color:var(--steel)">81</span></div>
+        <div class="title-row data"><span class="tn">Agricultural Economist</span><span class="cnt">32</span></div>
+      </div>
+      <div class="titles-col">
+        <div class="titles-col-header" style="background:rgba(26,79,214,.2);color:var(--blueL)">🏢 Private Sector — Adzuna (N=95, directional)</div>
+        <div style="font-size:.72rem;color:var(--muted);padding:.4rem .9rem;border-bottom:1px solid rgba(255,255,255,.04);font-style:italic">Agriculture</div>
+        <div class="title-row data"><span class="tn">Precision Ag Technologist</span></div>
+        <div class="title-row"><span class="tn">Ag Operations Manager</span></div>
+        <div class="title-row data"><span class="tn">Livestock Data Analyst</span></div>
+        <div class="title-row"><span class="tn">Farm Systems Specialist</span></div>
+        <div style="font-size:.72rem;color:var(--muted);padding:.4rem .9rem;border-bottom:1px solid rgba(255,255,255,.04);font-style:italic">Sustainability</div>
+        <div class="title-row data"><span class="tn">ESG Data Analyst</span></div>
+        <div class="title-row data"><span class="tn">Carbon Accounting Analyst</span></div>
+        <div class="title-row data"><span class="tn">Environmental Data Analyst</span></div>
+        <div class="title-row data"><span class="tn">GIS / Remote Sensing Analyst</span></div>
+      </div>
+    </div>
+    <p style="font-size:.74rem;color:var(--muted);font-style:italic;margin-top:.8rem">Green rows = data/GIS/analytics roles aligning with domain shift growth · Federal titles: USAJobs 2019–2025 · Private sector: Adzuna Jan 2026 snapshot</p>
+  </div>
+</section>
+
+<!-- KEY TAKEAWAYS -->
+<section class="bg-alt">
+  <div class="container">
+    <div class="s-eyebrow">Summary</div>
+    <h2 class="s-title">Key Takeaways</h2>
+    <div class="divider"></div>
+
+    <div class="tk-card">
+      <div class="tk-num" style="color:var(--greenL)">01</div>
+      <div>
+        <h3 style="color:var(--greenL)">Active Learning Is the Only Skill Trending Upward</h3>
+        <p>Every other skill category is declining or flat on the O*NET 5-point scale (2020→2024). Employers want candidates who can adapt — not candidates who already know everything. Active learning is rising because the field is changing too fast to require mastery of any fixed toolset.</p>
+      </div>
+    </div>
+    <div class="tk-card">
+      <div class="tk-num" style="color:var(--goldL)">02</div>
+      <div>
+        <h3 style="color:var(--goldL)">Digital Tool Proficiency Is Now the Gatekeeper</h3>
+        <p>GIS, data analytics, and remote sensing platforms entered 13 of 21 occupation categories since 2020 — for roles that didn't require them when current seniors enrolled. Students face ATS screening barriers based on credentials that postdate their curriculum choices. This is a structural misalignment, not an individual failure.</p>
+      </div>
+    </div>
+    <div class="tk-card">
+      <div class="tk-num" style="color:var(--redL)">03</div>
+      <div>
+        <h3 style="color:var(--redL)">The Salary Story Is About Grade, Not Sector</h3>
+        <p>The raw Agriculture vs Sustainability wage gap collapses to +0.4% (NS) once GS grade and location are controlled. Grade sorting explains the raw difference. Credentials that unlock GS-7 and GS-9 entry grades matter far more than sector choice — GIS and data analytics are the primary route to entering above GS-5.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- POLICY IMPLICATIONS -->
+<section>
+  <div class="container">
+    <div class="s-eyebrow">Implications</div>
+    <h2 class="s-title">Policy Implications</h2>
+    <div class="divider"></div>
+    <div class="policy-grid">
+      <div class="policy-card">
+        <div class="pc-header" style="background:rgba(26,79,214,.25);color:var(--blueL)">For Students</div>
+        <ul>
+          <li>Build GIS and data analytics skills before graduation — now baseline screening criteria in 13 occupation categories</li>
+          <li>Pursue federal Pathways programs or private sector internships early — federal early-career rate is only 3.3%</li>
+          <li>Target GS-7 and GS-9 entry grades through certifications — +6.8% and +13.2% salary premiums</li>
+          <li>Optimize resumes for ATS keyword screening</li>
+        </ul>
+      </div>
+      <div class="policy-card">
+        <div class="pc-header" style="background:rgba(232,160,32,.2);color:var(--goldL)">For Universities</div>
+        <ul>
+          <li>Embed GIS and data literacy across all agricultural and environmental programs — not just data tracks</li>
+          <li>Integrate ATS navigation into career services</li>
+          <li>Create structured pathways to internship access before students enter the job market</li>
+          <li>Align curriculum to the 86 new technology requirements now expected in federal and private roles</li>
+        </ul>
+      </div>
+      <div class="policy-card">
+        <div class="pc-header" style="background:rgba(22,160,74,.2);color:var(--greenL)">For Employers</div>
+        <ul>
+          <li>Audit ATS settings to avoid filtering qualified early-career candidates whose credentials postdate enrollment</li>
+          <li>Recognize that GS grade and location — not sector — drive federal compensation differences</li>
+          <li>Invest in GIS and data literacy training for entry-level hires in roles that recently added these requirements</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- METHODS -->
+<section class="bg-alt" id="methods">
+  <div class="container">
+    <div class="s-eyebrow">Technical Documentation</div>
+    <h2 class="s-title">Methods</h2>
+    <div class="divider"></div>
+
+    <div class="method-flow">
+      <div class="mf-box">
+        <h3>Data Collection</h3>
+        <ul>
+          <li>USAJobs API (federal)</li>
+          <li>Job Market API (private)</li>
+          <li>O*NET DOL occupational</li>
+          <li>25,530 total postings</li>
+        </ul>
+      </div>
+      <div class="mf-box">
+        <h3>Data Processing</h3>
+        <ul>
+          <li>Python NLP extraction</li>
+          <li>Skill classification</li>
+          <li>Sector reclassification</li>
+          <li>Pre/post period coding</li>
+        </ul>
+      </div>
+      <div class="mf-box">
+        <h3>Data Analysis</h3>
+        <ul>
+          <li>Descriptive comparisons</li>
+          <li>OLS + fixed effects</li>
+          <li>Company-clustered SE</li>
+          <li>Hedonic salary model</li>
+        </ul>
+      </div>
+    </div>
+
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;color:var(--goldL);margin:2rem 0 .8rem">Temporal Framework</div>
+    <div style="display:flex;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:6px;overflow:hidden">
+      <div style="flex:1;background:#1a4fd620;padding:1rem;text-align:center"><div style="font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--blueL);margin-bottom:.3rem">Pre-GenAI</div><div style="font-size:.9rem;color:var(--cream);font-weight:500">2019–2022</div><div style="font-size:.76rem;color:var(--steel)">16,578 postings</div></div>
+      <div style="flex:1;background:var(--ink3);padding:1rem;text-align:center"><div style="font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--goldL);margin-bottom:.3rem">ChatGPT Launch</div><div style="font-size:.9rem;color:var(--goldL);font-weight:500">November 2022</div><div style="font-size:.76rem;color:var(--steel)">Natural experiment cutoff</div></div>
+      <div style="flex:1;background:#c0392b20;padding:1rem;text-align:center"><div style="font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--redL);margin-bottom:.3rem">Post-GenAI</div><div style="font-size:.9rem;color:var(--cream);font-weight:500">2023–2025</div><div style="font-size:.76rem;color:var(--steel)">8,952 postings</div></div>
+    </div>
+
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;color:var(--goldL);margin:2rem 0 .8rem">Systems of Equations</div>
+    <div class="eq-card">
+      <div class="eq-label">Equation 1 — Skill Composition Model (SUREG)</div>
+      Skillⱼ = β₀ + β₁(After_ChatGPT) + β₂(Sector) + β₃(Location) + β₄(Job_Type) + εᵢ<br>
+      <span style="color:var(--steel)">where j ∈ {Technical, Digital, Soft} · company-clustered SE · HC1 robust standard errors</span>
+    </div>
+    <div class="eq-card" style="border-left-color:var(--gold)">
+      <div class="eq-label">Equation 2 — Hedonic Salary Model (Two-Way Fixed Effects)</div>
+      log(Salary) = β₀ + β₁(After_ChatGPT) + β₂(Sector) + β₃(Sector×After) + β₄(Grade) + αᵢ + γᵗ + δˡ + ε<br>
+      <span style="color:var(--steel)">αᵢ = company FE · γᵗ = year FE · δˡ = location FE · N=21,098 grade-known rows · R²=0.947</span>
+    </div>
+    <p class="eq-note">R² ≈ 0.95 is expected for federal GS data — grade, locality, and year nearly determine pay mechanically. This is not overfitting.</p>
+  </div>
+</section>
+
+<!-- ABOUT / TEAM -->
+<section id="about">
+  <div class="container">
+    <div class="s-eyebrow">The Team</div>
+    <h2 class="s-title">About This Research</h2>
+    <div class="divider"></div>
+    <p class="s-desc" style="max-width:700px">This study is part of the Rutgers Aresty Research Program (2025–2026), advised by Dr. Yanhong Jin at the Department of Agricultural, Food, and Resource Economics. It was presented at the Rutgers Aresty Research Symposium and submitted to the AAEA Annual Meeting, Kansas City, July 2026.</p>
+
+    <div class="team-grid">
+      <div class="team-card">
+        <div class="tc-name">Sadhana Vasanthakumar '28</div>
+        <div class="tc-role">Computer Science & Data Science (Statistics Track)</div>
+        <div class="tc-minor">Minor: Cognitive Science & Statistics</div>
+      </div>
+      <div class="team-card">
+        <div class="tc-name">Vinayak Ghai '26</div>
+        <div class="tc-role">[Major]</div>
+        <div class="tc-minor">[Minor]</div>
+      </div>
+      <div class="team-card">
+        <div class="tc-name">Ziyong Qu '28</div>
+        <div class="tc-role">Economics</div>
+        <div class="tc-minor">Minor: Business Administration</div>
+      </div>
+      <div class="team-card">
+        <div class="tc-name">Nikhil Srinivas '28</div>
+        <div class="tc-role">[Major]</div>
+        <div class="tc-minor">[Minor]</div>
+      </div>
+    </div>
+
+    <div class="callout" style="margin-top:1.5rem">
+      <strong>Faculty Advisor:</strong> Dr. Yanhong Jin, Department of Agricultural, Food, and Resource Economics, Rutgers University · <a href="mailto:jinyh@sebs.rutgers.edu" style="color:var(--goldL)">jinyh@sebs.rutgers.edu</a>
+    </div>
+
+    <div style="margin-top:2rem;padding:1.2rem;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:6px">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--steel);margin-bottom:.8rem">Future Research</div>
+      <ul style="list-style:none;display:flex;flex-direction:column;gap:.4rem">
+        <li style="font-size:.85rem;color:var(--steel);padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--blue)">1.</span> Expand NLP extraction to full job descriptions — Adzuna private sector findings are currently directional only (N=95)</li>
+        <li style="font-size:.85rem;color:var(--steel);padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--blue)">2.</span> Apply transformer-based NLP to detect task-level changes, not just credential listing</li>
+        <li style="font-size:.85rem;color:var(--steel);padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--blue)">3.</span> Longitudinal tracking: do current cohorts without GIS training face measurably worse employment outcomes?</li>
+        <li style="font-size:.85rem;color:var(--steel);padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--blue)">4.</span> International comparison across agricultural labor markets</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="fb">AgWorkforce AI</div>
+  <p>Rutgers Aresty Research Program 2025–2026 · Department of Agricultural, Food, and Resource Economics</p>
+  <p style="margin-top:.3rem">Presented at Rutgers Research Symposium · Submitted to AAEA Annual Meeting, Kansas City, July 2026</p>
+  <p style="margin-top:.3rem">Vasanthakumar · Ghai · Qu · Srinivas · Advisor: Dr. Yanhong Jin</p>
+</footer>
+
+<script>
+// ── CHART DEFAULTS ─────────────────────────────────────────────────────────
+const C={gold:'#e8a020',goldL:'#f5c050',blue:'#1a4fd6',blueL:'#3b6ef0',green:'#16a04a',greenL:'#22c962',red:'#c0392b',redL:'#e85a4a',steel:'#7a8eaa',cream:'rgba(240,244,255,0.9)',grid:'rgba(255,255,255,0.05)'};
+Chart.defaults.color=C.steel;Chart.defaults.font.family="'IBM Plex Sans',sans-serif";Chart.defaults.font.size=11;
+
+// Skill shift
+new Chart(document.getElementById('skillShiftChart'),{type:'bar',data:{
+  labels:['Mgmt of Personnel Res.','Quality Control Analysis','Instructing','Time Management','Technology Design','Operation & Control','Systems Analysis','Monitoring','Active Listening','Programming','Active Learning','Equipment Maintenance','Complex Problem Solving'],
+  datasets:[{data:[-0.068,-0.061,-0.058,-0.057,-0.051,-0.044,-0.038,-0.01,0.015,0.023,0.014,0.052,0.053],
+    backgroundColor:ctx=>{const v=ctx.raw;return v>0?C.greenL:C.redL},borderRadius:3,borderSkipped:false}]
+},options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{
+  x:{grid:{color:C.grid},ticks:{font:{size:10}},border:{display:false}},
+  y:{grid:{display:false},ticks:{font:{size:9.5},color:C.cream}}
+}}});
+
+// Gaining
+new Chart(document.getElementById('gainingChart'),{type:'bar',data:{
+  labels:['Complex Problem Solving','Equipment Maintenance','Programming','Active Learning','Active Listening','Learning Strategies'],
+  datasets:[{data:[0.053,0.052,0.023,0.015,0.015,0.014],backgroundColor:C.greenL,borderRadius:3}]
+},options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{grid:{color:C.grid},ticks:{font:{size:10}}},y:{grid:{display:false},ticks:{font:{size:9.5},color:C.cream}}}}});
+
+// Losing
+new Chart(document.getElementById('losingChart'),{type:'bar',data:{
+  labels:['Mgmt of Personnel Res.','Quality Control Analysis','Instructing','Time Management','Technology Design','Operation & Control','Systems Analysis'],
+  datasets:[{data:[0.068,0.061,0.058,0.057,0.051,0.044,0.038],backgroundColor:C.redL,borderRadius:3}]
+},options:{indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`−${ctx.raw}`}}},scales:{x:{grid:{color:C.grid},ticks:{font:{size:10},callback:v=>`−${v}`}},y:{grid:{display:false},ticks:{font:{size:9.5},color:C.cream}}}}});
+
+// Tech groups
+new Chart(document.getElementById('techChart'),{type:'bar',data:{
+  labels:['Geospatial & Remote Sensing','Productivity & Communication','Agriculture & Field Mgmt','Design & Publishing','Data & Databases','AI & Optimization'],
+  datasets:[{data:[31,30,28,25,15,7],
+    backgroundColor:['#1a4fd6','#3b6ef0','#16a04a','#7a8eaa','#e8a020','#e85a4a'],borderRadius:3,borderSkipped:false}]
+},options:{indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.raw} occupations`}}},
+scales:{x:{grid:{color:C.grid},ticks:{font:{size:10}}},y:{grid:{display:false},ticks:{font:{size:9.5},color:C.cream}}}}});
+
+// Salary shift
+new Chart(document.getElementById('salaryShift'),{type:'bar',data:{
+  labels:['Before ChatGPT\n(2019–2022)','Post-ChatGPT\n(2023–2025)'],
+  datasets:[{data:[43251,49025],backgroundColor:['#1a4fd6','#c0392b'],borderRadius:4,borderSkipped:false}]
+},options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`$${ctx.raw.toLocaleString()}`}}},
+scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{grid:{color:C.grid},ticks:{font:{size:10},callback:v=>'$'+v.toLocaleString()}}}}});
+
+// Regression
+new Chart(document.getElementById('regressionChart'),{type:'bar',data:{
+  labels:['After ChatGPT','Sustainability premium','GS-7 vs GS-5','GS-9 vs GS-5','Internship','Seasonal'],
+  datasets:[{data:[1.1,0.4,6.8,13.2,-8.2,-5.4],
+    backgroundColor:ctx=>{const v=ctx.raw;if(v>5)return C.goldL;if(v>0)return C.blueL;return C.redL},borderRadius:3,borderSkipped:false}]
+},options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.raw>0?'+':''}${ctx.raw}%`}}},
+scales:{x:{grid:{display:false},ticks:{font:{size:9.5}}},y:{grid:{color:C.grid},ticks:{font:{size:10},callback:v=>v+'%'}}}}});
+
+// Early career
+new Chart(document.getElementById('earlyCareerChart'),{type:'bar',data:{
+  labels:['Federal (USAJobs)','Private Sector (Adzuna)'],
+  datasets:[{data:[3.3,32],backgroundColor:['#1a4fd6','#22c962'],borderRadius:4,borderSkipped:false}]
+},options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.raw}%`}}},
+scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{grid:{color:C.grid},ticks:{font:{size:10},callback:v=>v+'%'},max:40}}}});
+
+// Domain shift
+new Chart(document.getElementById('domainChart'),{type:'bar',data:{
+  labels:['Biology & Ecological Sci','Wildlife Biology','Ag Loans & Grading','Data Science','GIS & Geospatial','Hydrology','Environmental Policy','Chemistry','Wildland Fire','Soil & Range','Forestry & Silviculture'],
+  datasets:[{data:[4.2,1.1,1.0,0.22,0.08,0.05,-0.08,-0.4,-0.65,-0.8,-4.5],
+    backgroundColor:ctx=>ctx.raw>=0?C.greenL:C.redL,borderRadius:3,borderSkipped:false}]
+},options:{indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.raw>0?'+':''}${ctx.raw}pp`}}},
+scales:{x:{grid:{color:C.grid},ticks:{font:{size:9.5},callback:v=>(v>0?'+':'')+v+'pp'}},
+y:{grid:{display:false},ticks:{font:{size:9.5},color:C.cream}}}}});
+
+// Tab switching
+function switchTab(id,group){
+  const groups={sk:['sk-shift','sk-top','sk-table']};
+  const panels=groups[group];
+  panels.forEach(p=>{const el=document.getElementById(p);if(el)el.classList.remove('active')});
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(btn=>{
+    if(btn.getAttribute('onclick')&&btn.getAttribute('onclick').includes(`'${id}'`))btn.classList.add('active');
+    else if(btn.getAttribute('onclick')&&btn.getAttribute('onclick').includes(`,'${group}'`))btn.classList.remove('active');
+  });
+}
+</script>
+</body>
+</html>
